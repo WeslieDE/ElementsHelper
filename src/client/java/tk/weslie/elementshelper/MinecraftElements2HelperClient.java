@@ -9,6 +9,7 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Items;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -36,12 +37,16 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 		UNBREAKABLE_BLOCKS.add(Blocks.PUMPKIN_STEM);
 		UNBREAKABLE_BLOCKS.add(Blocks.AMETHYST_BLOCK);
 		UNBREAKABLE_BLOCKS.add(Blocks.TORCHFLOWER);
+		UNBREAKABLE_BLOCKS.add(Blocks.FARMLAND);
 	}
 
 	@Override
 	public void onInitializeClient() {
 		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
 			BlockState state = world.getBlockState(pos);
+
+			if(player.getMainHandStack().getItem() == Items.STICK)
+				return ActionResult.PASS;
 
 			if (UNBREAKABLE_BLOCKS.contains(state.getBlock())) {
 				BlockPos belowPos = pos.down();
