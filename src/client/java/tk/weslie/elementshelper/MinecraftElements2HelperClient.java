@@ -30,14 +30,20 @@ import java.util.Set;
 
 public class MinecraftElements2HelperClient implements ClientModInitializer  {
 	private static final Set<Block> UNBREAKABLE_BLOCKS = new HashSet<>();
+	private static final Set<Block> FARMLAND_BLOCKS = new HashSet<>();
 
 	static {
 		UNBREAKABLE_BLOCKS.add(Blocks.KELP_PLANT);
 		UNBREAKABLE_BLOCKS.add(Blocks.KELP);
 		UNBREAKABLE_BLOCKS.add(Blocks.PUMPKIN_STEM);
+		UNBREAKABLE_BLOCKS.add(Blocks.ATTACHED_PUMPKIN_STEM);
 		UNBREAKABLE_BLOCKS.add(Blocks.AMETHYST_BLOCK);
 		UNBREAKABLE_BLOCKS.add(Blocks.TORCHFLOWER);
-		UNBREAKABLE_BLOCKS.add(Blocks.FARMLAND);
+		UNBREAKABLE_BLOCKS.add(Blocks.BAMBOO);
+		UNBREAKABLE_BLOCKS.add(Blocks.BAMBOO_SAPLING);
+
+		FARMLAND_BLOCKS.add(Blocks.MUD);
+		FARMLAND_BLOCKS.add(Blocks.FARMLAND);
 	}
 
 	@Override
@@ -48,15 +54,18 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 			if(player.getMainHandStack().getItem() == Items.STICK)
 				return ActionResult.PASS;
 
+			if (FARMLAND_BLOCKS.contains(state.getBlock())) {
+				player.sendMessage(Text.of("Farmland kann nicht abgebaut werden!"), true);
+				return ActionResult.FAIL;
+			}
+
 			if (UNBREAKABLE_BLOCKS.contains(state.getBlock())) {
 				BlockPos belowPos = pos.down();
 				BlockState belowState = world.getBlockState(belowPos);
 
-				if(!world.isAir(pos.down())){
-					if (!UNBREAKABLE_BLOCKS.contains(belowState.getBlock())) {
-						player.sendMessage(Text.of("Dieser Block kann nicht abgebaut werden!"), true);
-						return ActionResult.FAIL;
-					}
+				if (!UNBREAKABLE_BLOCKS.contains(belowState.getBlock()) || world.isAir(belowPos)) {
+					player.sendMessage(Text.of("Dieser Block kann nicht abgebaut werden!"), true);
+					return ActionResult.FAIL;
 				}
 			}
 
