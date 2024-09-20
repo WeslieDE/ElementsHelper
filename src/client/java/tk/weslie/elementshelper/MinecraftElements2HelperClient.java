@@ -37,7 +37,6 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 		UNBREAKABLE_BLOCKS.add(Blocks.PUMPKIN_STEM);
 		UNBREAKABLE_BLOCKS.add(Blocks.AMETHYST_BLOCK);
 		UNBREAKABLE_BLOCKS.add(Blocks.TORCHFLOWER);
-		UNBREAKABLE_BLOCKS.add(Blocks.FARMLAND);
 	}
 
 	@Override
