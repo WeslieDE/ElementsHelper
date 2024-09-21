@@ -11,6 +11,12 @@ The following blocks are protected and cannot be destroyed:
 -   **Pumpkin Stem**
 -   **Amethyst Blocks**
 -   **Torchflowers**
+-   **Bamboo**
+
+These blocks consume "Farming Slots" and cannot be replaced. 
+Thats why this blocks need special protection to prevent them from being accidentally broken.
+
+Additionally, Farmland and Mud are also protected too. This blocks are often used as Farmland.
 
 ## 🔧 **Bypassing Protection**
 
