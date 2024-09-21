@@ -22,6 +22,9 @@ Additionally, Farmland and Mud are also protected too. This blocks are often use
 
 If you ever need to break one of the protected blocks, you can do so by using a **Stick**. With a Stick, you can bypass the block protection and break the blocks as usual.
 
+Additionally, there is a key combination to disable the protection for a certain time period. F7.
+However, if no block is broken within 90 seconds, the protection automatically reactivates.
+
 ## 🎥 **Demo Video**
 
 Check out a demonstration of the mod's features in action:

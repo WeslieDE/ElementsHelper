@@ -41,6 +41,8 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 	private static long keyPressTimeout = 0;
 	private static boolean isFarmingModeEnabled = true;
 
+	private static Countdown toogleTimer = null;
+
 	static {
 		UNBREAKABLE_BLOCKS.add(Blocks.KELP_PLANT);
 		UNBREAKABLE_BLOCKS.add(Blocks.KELP);
@@ -53,6 +55,8 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 
 		FARMLAND_BLOCKS.add(Blocks.MUD);
 		FARMLAND_BLOCKS.add(Blocks.FARMLAND);
+
+		toogleTimer = new Countdown(90);
 	}
 
 	@Override
@@ -74,6 +78,12 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 						keyPressTimeout = System.currentTimeMillis();
 						isFarmingModeEnabled = !isFarmingModeEnabled;
 						client.player.sendMessage(Text.of(isFarmingModeEnabled ? "Farming-Mode aktiviert!" : "Farming-Mode deaktiviert!"), true);
+
+						if(isFarmingModeEnabled)
+							toogleTimer.start(() -> {isFarmingModeEnabled = true; toogleTimer.stop();});
+
+						if(!isFarmingModeEnabled)
+							toogleTimer.stop();
 					}
 				}
 			}catch(Exception e){
@@ -83,7 +93,10 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 
 		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
 			if(!isFarmingModeEnabled)
+			{
+				toogleTimer.reset();
 				return ActionResult.PASS;
+			}
 
 			BlockState state = world.getBlockState(pos);
 
@@ -107,5 +120,7 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 
             return ActionResult.PASS;
         });
+
+
 	}
 }
