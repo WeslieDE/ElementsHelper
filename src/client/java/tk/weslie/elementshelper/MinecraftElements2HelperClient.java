@@ -27,31 +27,35 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class MinecraftElements2HelperClient implements ClientModInitializer  {
-	private static final Set<Block> UNBREAKABLE_BLOCKS = new HashSet<>();
-	private static final Set<Block> FARMLAND_BLOCKS = new HashSet<>();
+	private static final Set<Block> WHITELIST_BLOCKS = new HashSet<>();
 
 	private static KeyBinding autoHitKeybind;
 	private static long keyPressTimeout = 0;
 	private static boolean isFarmingModeEnabled = true;
 
 	static {
-		UNBREAKABLE_BLOCKS.add(Blocks.KELP_PLANT);
-		UNBREAKABLE_BLOCKS.add(Blocks.KELP);
-		UNBREAKABLE_BLOCKS.add(Blocks.PUMPKIN_STEM);
-		UNBREAKABLE_BLOCKS.add(Blocks.ATTACHED_PUMPKIN_STEM);
-		UNBREAKABLE_BLOCKS.add(Blocks.BUDDING_AMETHYST);
-		UNBREAKABLE_BLOCKS.add(Blocks.TORCHFLOWER);
-		UNBREAKABLE_BLOCKS.add(Blocks.BAMBOO);
-		UNBREAKABLE_BLOCKS.add(Blocks.BAMBOO_SAPLING);
 
+		//Stage 1
+		WHITELIST_BLOCKS.add(Blocks.COBBLESTONE);
 
-		FARMLAND_BLOCKS.add(Blocks.MUD);
-		FARMLAND_BLOCKS.add(Blocks.FARMLAND);
-		FARMLAND_BLOCKS.add(Blocks.TERRACOTTA);
-		FARMLAND_BLOCKS.add(Blocks.WHITE_GLAZED_TERRACOTTA);
-		FARMLAND_BLOCKS.add(Blocks.BLUE_GLAZED_TERRACOTTA);
-		FARMLAND_BLOCKS.add(Blocks.BLACK_GLAZED_TERRACOTTA);
-		FARMLAND_BLOCKS.add(Blocks.GLASS);
+		//Stage 2
+		WHITELIST_BLOCKS.add(Blocks.KELP);
+		WHITELIST_BLOCKS.add(Blocks.KELP_PLANT);
+
+		//Stage 3
+		WHITELIST_BLOCKS.add(Blocks.PUMPKIN);
+
+		//Stage 4
+		WHITELIST_BLOCKS.add(Blocks.AMETHYST_CLUSTER);
+		WHITELIST_BLOCKS.add(Blocks.LARGE_AMETHYST_BUD);
+		WHITELIST_BLOCKS.add(Blocks.MEDIUM_AMETHYST_BUD);
+		WHITELIST_BLOCKS.add(Blocks.SMALL_AMETHYST_BUD);
+
+		//Stage 5
+		WHITELIST_BLOCKS.add(Blocks.BAMBOO);
+
+		//Stage 6
+		WHITELIST_BLOCKS.add(Blocks.TORCHFLOWER);
 	}
 
 
@@ -82,30 +86,28 @@ public class MinecraftElements2HelperClient implements ClientModInitializer  {
 		});
 
 		AttackBlockCallback.EVENT.register((player, world, hand, pos, direction) -> {
-			if(!isFarmingModeEnabled)
+			if(!isFarmingModeEnabled) //Wenn Farming Mode off dann erlaube immer abbauen.
 				return ActionResult.PASS;
 
 			BlockState state = world.getBlockState(pos);
+			BlockPos belowPos = pos.down();
+			BlockState belowState = world.getBlockState(belowPos);
 
-			if(player.getMainHandStack().getItem() == Items.STICK)
-				return ActionResult.PASS;
-
-			if (FARMLAND_BLOCKS.contains(state.getBlock())) {
-				player.sendMessage(Text.of("Farmland kann nicht abgebaut werden!"), true);
+			//Wenn der block nicht in der whitelist ist, verbiete das abbauen.
+			if (!WHITELIST_BLOCKS.contains(state.getBlock()))
+			{
+				player.sendMessage(Text.of("Du kannst diesen Block nicht abbauen!"), true);
 				return ActionResult.FAIL;
 			}
 
-			if (UNBREAKABLE_BLOCKS.contains(state.getBlock())) {
-				BlockPos belowPos = pos.down();
-				BlockState belowState = world.getBlockState(belowPos);
-
-				if (!UNBREAKABLE_BLOCKS.contains(belowState.getBlock()) || world.isAir(belowPos)) {
-					player.sendMessage(Text.of("Dieser Block kann nicht abgebaut werden!"), true);
-					return ActionResult.FAIL;
-				}
+			//Wenn es der unterste block von Kelp oder Bambus ist, verbiete das abbauen.
+			if((state.getBlock().equals(Blocks.BAMBOO) || state.getBlock().equals(Blocks.KELP) || state.getBlock().equals(Blocks.KELP_PLANT)) && !WHITELIST_BLOCKS.contains(belowState.getBlock()))
+			{
+				player.sendMessage(Text.of("Du kannst diesen Block nicht abbauen!"), true);
+				return ActionResult.FAIL;
 			}
 
-            return ActionResult.PASS;
+			return ActionResult.PASS;
         });
 	}
 }
